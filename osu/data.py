@@ -23,11 +23,11 @@ def getAllBeatmapData():
     since = '2000-01-01'
     prev_res = set()
     res = osu_api.get_beatmaps(since=since)
-    print(type(res))
+    # print(type(res))
 
     # 重複削除
-    res_id = {r['beatmap_id'] for r in res} & prev_res
-    res = [r for r in res if r['beatmap_id'] not in res_id]
+    res_duplicated = {r['beatmap_id'] for r in res} & prev_res
+    res = [r for r in res if r['beatmap_id'] not in res_duplicated]
     # print(res)
 
     json_name = 'test.json'

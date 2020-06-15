@@ -13,7 +13,7 @@ class osuAPI():
         self.params = {'k': self.api_key}
 
     def get_beatmaps(self, since, mode=2, a=1, limit=500, err_count=0):
-        print(f'get_beatmaps')
+        # print(f'get_beatmaps')
         api_url = f'{self.api_base_url}get_beatmaps'
         params = self.params
         params.update({
