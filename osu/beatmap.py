@@ -24,17 +24,23 @@ class osuAPI():
         })
         res = requests.get(api_url, params=params)
         if res.status_code == 200:
-            return res.json()
+            data = [{'approved_date': r['approved_date'], 'beatmapset_id':int(r['beatmapset_id']),
+                     'beatmap_id': int(r['beatmap_id']), 'diff_name': r['version'],
+                     'approved': int(r['approved']), 'artist': r['artist'], 'title': r['title'],
+                     'creator': r['creator'], 'creator_id': r['creator_id'],
+                     'CS': float(r['diff_size']), 'AR': float(r['diff_approach']),
+                     'OD': float(r['diff_overall']), 'HP': float(r['diff_drain']),
+                     'difficulty': float(r['difficultyrating'])} for r in res.json()]
+            return data
         else:
             print(f'request failed. since: {since}, status: {res.status_code} \nwill retry after 10 sec...')
             time.sleep(10)
             err_count += 1
             if err_count < 10:
-                get_beatmaps(since=since, err_count=err_count)
+                self.get_beatmaps(since=since, err_count=err_count)
             else:
-                print(f'request failed 10 times. stop requesting')
+                print('request failed 10 times. stop requesting')
                 exit()
-
 
     def get_user(self, user, mode=2):
         print(f'get_user: {user}')
@@ -49,7 +55,7 @@ class osuAPI():
         return
 
     def get_scores(self, beatmap, mode=2, limit=100):
-        print(f'get_scores')
+        print('get_scores')
         api_url = f'{self.api_base_url}get_scores'
         params = self.params
         params.update({
@@ -58,7 +64,9 @@ class osuAPI():
             'limit': limit,
         })
         res = requests.get(api_url, params=params)
-        scores = [{'date': r['date'], 'mods': r['enabled_mods'], 'maxcombo': r['maxcombo'], 'perfect': r['perfect'], 'pp': r['pp'],
-                   'rank': r['rank'], 'score': r['score'], 'score_id': r['score_id'], 'user_id': r['user_id'], 'username': r['username']} for r in res.json()]
+        scores = [{'date': r['date'], 'mods':int(r['enabled_mods']), 'maxcombo':int(r['maxcombo']),
+                   'perfect': int(r['perfect']), 'pp': int(r['pp']), 'rank': r['rank'], 'score': int(r['score']),
+                   'score_id': int(r['score_id']), 'user_id': int(r['user_id']), 'username': r['username']}
+                  for r in res.json()]
         pprint(scores)
         return
