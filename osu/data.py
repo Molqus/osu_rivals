@@ -6,6 +6,7 @@ import time
 from beatmap import osuAPI
 from db_utils import Database, Table
 
+
 '''
 すべてのビートマップの情報を収集する（API叩く）
 ranked, loved, approvedだけbeatmapテーブルに格納する
@@ -14,16 +15,13 @@ scoreテーブルに格納する
 '''
 
 
-def getAllBeatmapData():
-    '''
-    すべてのビートマップの情報を収集する
-    sinceを用いることでleaderboardがある譜面だけ収集することができるので、
-    1回APIを叩いて500譜面収集した後に最後の譜面のranked日時を次のsinceにする
-    '''
-    osu_api = osuAPI()
-    since = '2000-01-01'
+def get_beatmap_recursive(osu_api, since, json_name):
+    json_flag = os.path.isfile(json_name)
+    if json_flag:
+        with open(json_name) as f:
+            prev_res = set((b['beatmap_id'] for b in json.load(f)[-100:]))
+    else:
     prev_res = set()
-    json_name = '../data/beatmaps.json'
 
     while 1:
         res = osu_api.get_beatmaps(since=since)
@@ -37,7 +35,7 @@ def getAllBeatmapData():
         res = [r for r in res if r['beatmap_id'] not in res_duplicated]
         # print(res)
 
-        if os.path.isfile(json_name):
+        if json_flag:
             with open(json_name, 'ab+') as f:
                 f.seek(-1, 2)
                 f.truncate()
@@ -60,6 +58,37 @@ def getAllBeatmapData():
         print(since)
         print(res[0]['beatmap_id'], res[-1]['beatmap_id'], len(set(prev_res)))
         time.sleep(10)
+
+
+def getAllBeatmapData():
+    '''
+    すべてのビートマップの情報を収集する
+    sinceを用いることでleaderboardがある譜面だけ収集することができるので、
+    1回APIを叩いて500譜面収集した後に最後の譜面のranked日時を次のsinceにする
+    '''
+    osu_api = osuAPI()
+    since = '2000-01-01'
+    json_name = '../data/beatmaps.json'
+
+    get_beatmap_recursive(osu_api, since, json_name)
+
+
+def updateBeatmapData():
+    osu_api = osuAPI()
+    json_name = '../data/beatmaps.json'
+
+    try:
+        with open(json_name) as f:
+            beatmaps = json.load(f)
+
+        since = str(datetime.strptime(beatmaps[-1]['approved_date'],
+                                      '%Y-%m-%d %H:%M:%S') - timedelta(seconds=1))
+    except FileNotFoundError:
+        print('previous data is not found. start to collect all maps...')
+        since = '2000-01-01'
+
+    print('start updating beatmap data.')
+    get_beatmap_recursive(osu_api, since, json_name)
 
 
 if __name__ == "__main__":
