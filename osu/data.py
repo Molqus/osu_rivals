@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+import argparse
 import json
 import os
 import time
+from datetime import datetime, timedelta
 
 from beatmap import osuAPI
 from db_utils import Database, Table
@@ -92,4 +93,13 @@ def updateBeatmapData():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-gb', '--getb', help='get all ranked beatmap. you should execute first.', action='store_true')
+    parser.add_argument('-ub', '--updateb', help='update beatmap data.', action='store_true')
+    args = parser.parse_args()
+    if args.getb:
     getAllBeatmapData()
+    elif args.updateb:
+        updateBeatmapData()
+    else:
+        parser.print_help()
