@@ -8,13 +8,23 @@ class Database():
         self.table = table
 
     def connect(self):
-        self.connect = sqlite3.conenct(self.db_name)
+        self.connect = sqlite3.connect(self.db_name)
 
     def close(self):
         self.connect.close()
 
     def create_table(self):
-        self.connect.execute(self.table.create())
+        try:
+            self.connect.execute(self.table.create())
+        except sqlite3.Error as e:
+            print(e)
+
+    def insert_table(self, data):
+        try:
+            self.connect.executemany(self.table.insert(), data)
+            self.connect.commit()
+        except sqlite3.Error as e:
+            print(e)
 
 
 class Table():
@@ -28,13 +38,15 @@ class Table():
 
     def create(self):
         column_str = ''
-        for k, v in self.columns:
+        for k, v in self.columns.items():
             if not column_str:
                 column_str += f'{k} {v}'
             else:
                 column_str += f', {k} {v}'
-        syntax = f'create table {self.table_name}({column_str})'
+        syntax = f'create table if not exists {self.table_name}({column_str})'
         return syntax
 
     def insert(self):
-        pass
+        placeholder = '?' + ', ?' * (len(self.columns) - 1)
+        syntax = f'insert into {self.table_name} values ({placeholder})'
+        return syntax
