@@ -92,14 +92,45 @@ def updateBeatmapData():
     get_beatmap_recursive(osu_api, since, json_name)
 
 
+def getAllscores():
+    osu_api = osuAPI()
+    json_name = '../data/beatmaps.json'
+    table_name = 'score'
+    db_name = 'test.db'
+    columns = {'score_id': 'integer primary key', 'beatmap_id': 'integer', 'score': 'integer', 'user_id': 'integer',
+               'username': 'text', 'pp': 'real', 'maxcombo': 'integer', 'rank': 'text', 'mods': 'integer',
+               'perfect': 'integer', 'date': 'text'}
+    score_table = Table(table_name=table_name, columns=columns)
+    db = Database(db_name=db_name, table=score_table)
+    db.connect()
+    db.create_table()
+
+    with open(json_name) as f:
+        beatmaps = json.load(f)
+
+    beatmap_id_list = {b['beatmap_id'] for b in beatmaps}
+    for b in beatmap_id_list:
+        scores = osu_api.get_scores(beatmap=b)
+        print(f'beatmap_id: {b}, number of scores: {len(scores)}')
+        data = [tuple(s.values()) for s in scores]
+        # print(data)
+        db.insert_table(data=data)
+        time.sleep(5)
+
+    db.close()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-gb', '--getb', help='get all ranked beatmap. you should execute first.', action='store_true')
     parser.add_argument('-ub', '--updateb', help='update beatmap data.', action='store_true')
+    parser.add_argument('-gs', '--gets', help='get all ranked score. read the result of --getb.', action='store_true')
     args = parser.parse_args()
     if args.getb:
         getAllBeatmapData()
     elif args.updateb:
         updateBeatmapData()
+    elif args.gets:
+        getAllscores()
     else:
         parser.print_help()
