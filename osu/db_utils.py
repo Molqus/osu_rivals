@@ -19,6 +19,13 @@ class Database():
         except sqlite3.Error as e:
             print(e)
 
+    def insert_table(self, data):
+        try:
+            self.connect.executemany(self.table.insert(), data)
+            self.connect.commit()
+        except sqlite3.Error as e:
+            print(e)
+
 
 class Table():
 
@@ -40,4 +47,6 @@ class Table():
         return syntax
 
     def insert(self):
-        pass
+        placeholder = '?' + ', ?' * (len(self.columns) - 1)
+        syntax = f'insert into {self.table_name} values ({placeholder})'
+        return syntax
