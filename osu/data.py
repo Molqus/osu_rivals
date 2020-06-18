@@ -22,7 +22,7 @@ def get_beatmap_recursive(osu_api, since, json_name):
         with open(json_name) as f:
             prev_res = set((b['beatmap_id'] for b in json.load(f)[-100:]))
     else:
-    prev_res = set()
+        prev_res = set()
 
     while 1:
         res = osu_api.get_beatmaps(since=since)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     parser.add_argument('-ub', '--updateb', help='update beatmap data.', action='store_true')
     args = parser.parse_args()
     if args.getb:
-    getAllBeatmapData()
+        getAllBeatmapData()
     elif args.updateb:
         updateBeatmapData()
     else:
