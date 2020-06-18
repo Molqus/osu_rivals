@@ -1,6 +1,7 @@
-import requests
 import time
 from pprint import pprint
+
+import requests
 
 
 class osuAPI():
@@ -13,7 +14,6 @@ class osuAPI():
         self.params = {'k': self.api_key}
 
     def get_beatmaps(self, since, mode=2, a=1, limit=500, err_count=0):
-        # print(f'get_beatmaps')
         api_url = f'{self.api_base_url}get_beatmaps'
         params = self.params
         params.update({
@@ -54,8 +54,7 @@ class osuAPI():
         pprint(res.json())
         return
 
-    def get_scores(self, beatmap, mode=2, limit=100):
-        print('get_scores')
+    def get_scores(self, beatmap, mode=2, limit=100, err_count=0):
         api_url = f'{self.api_base_url}get_scores'
         params = self.params
         params.update({
@@ -64,9 +63,18 @@ class osuAPI():
             'limit': limit,
         })
         res = requests.get(api_url, params=params)
-        scores = [{'date': r['date'], 'mods':int(r['enabled_mods']), 'maxcombo':int(r['maxcombo']),
-                   'perfect': int(r['perfect']), 'pp': int(r['pp']), 'rank': r['rank'], 'score': int(r['score']),
-                   'score_id': int(r['score_id']), 'user_id': int(r['user_id']), 'username': r['username']}
-                  for r in res.json()]
-        pprint(scores)
-        return
+        if res.status_code == 200:
+            scores = [{'date': r['date'], 'mods':int(r['enabled_mods']), 'maxcombo':int(r['maxcombo']),
+                       'perfect': int(r['perfect']), 'pp': int(r['pp']), 'rank': r['rank'], 'score': int(r['score']),
+                       'score_id': int(r['score_id']), 'user_id': int(r['user_id']), 'username': r['username']}
+                      for r in res.json()]
+            return scores
+        else:
+            print(f'request failed. beatmap: {beatmap}, status: {res.status_code} \nwill retry after 10 sec...')
+            time.sleep(10)
+            err_count += 1
+            if err_count < 10:
+                self.get_scores(beatmap=beatmap, err_count=err_count)
+            else:
+                print('request failed 10 times. stop requesting')
+                exit()
