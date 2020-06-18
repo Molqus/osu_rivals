@@ -64,10 +64,10 @@ class osuAPI():
         })
         res = requests.get(api_url, params=params)
         if res.status_code == 200:
-            scores = [{'date': r['date'], 'mods':int(r['enabled_mods']), 'maxcombo':int(r['maxcombo']),
-                       'perfect': int(r['perfect']), 'pp': int(r['pp']), 'rank': r['rank'], 'score': int(r['score']),
-                       'score_id': int(r['score_id']), 'user_id': int(r['user_id']), 'username': r['username']}
-                      for r in res.json()]
+            scores = [{'score_id': int(r['score_id']), 'beatmap_id': beatmap, 'score':int(r['score']),
+                       'user_id': int(r['user_id']), 'username': r['username'], 'pp': float(r['pp'] if r['pp'] else 0),
+                       'maxcombo': int(r['maxcombo']), 'rank': r['rank'], 'mods': int(r['enabled_mods']),
+                       'perfect': int(r['perfect']), 'date': r['date']} for r in res.json()]
             return scores
         else:
             print(f'request failed. beatmap: {beatmap}, status: {res.status_code} \nwill retry after 10 sec...')
