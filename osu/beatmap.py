@@ -1,5 +1,4 @@
 import time
-from pprint import pprint
 
 import requests
 
@@ -42,17 +41,36 @@ class osuAPI():
                 print('request failed 10 times. stop requesting')
                 exit()
 
-    def get_user(self, user, mode=2):
+    def get_user_from_name(self, user, mode=2, type='string', err_count=0):
         print(f'get_user: {user}')
         api_url = f'{self.api_base_url}get_user'
         params = self.params
         params.update({
             'u': user,
             'm': mode,
+            'type': type,
         })
         res = requests.get(api_url, params=params)
-        pprint(res.json())
-        return
+        if res.status_code == 200:
+            if not res.json()['pp'] or not int(res.json()['pp']):
+                # ppがnullまたは0ならスコアの記録がないと判断できる
+                data = []
+            else:
+                data = [{'user_id': int(r['user_id']), 'playcount':int(r['playcount']),
+                         'ranked_score': int(r['ranked_score']), 'total_score': int(r['total_score']),
+                         'pp_rank': int(r['pp_rank']), 'level': float(r['level']),
+                         'pp': float(r['pp']), 'accuracy': float(r['accuracy']), 'country': r['country'],
+                         'pp_country_rank': int(r['pp_country_rank'])} for r in res.json()]
+            return data
+        else:
+            print(f'request failed. user: {user}, status: {res.status_code} \nwill retry after 10 sec...')
+            time.sleep(10)
+            err_count += 1
+            if err_count < 10:
+                self.get_user_from_name(user=user, err_count=err_count)
+            else:
+                print('request failed 10 times. stop requesting')
+                exit()
 
     def get_scores(self, beatmap, mode=2, limit=100, err_count=0):
         api_url = f'{self.api_base_url}get_scores'
