@@ -9,19 +9,20 @@ class Database():
 
     def connect(self):
         self.connect = sqlite3.connect(self.db_name)
+        self.cursor = self.connect.cursor()
 
     def close(self):
         self.connect.close()
 
     def create_table(self):
         try:
-            self.connect.execute(self.table.create())
+            self.cursor.execute(self.table.create())
         except sqlite3.Error as e:
             print(e)
 
     def insert_table(self, data):
         try:
-            self.connect.executemany(self.table.insert(), data)
+            self.cursor.executemany(self.table.insert(), data)
             self.connect.commit()
         except sqlite3.Error as e:
             print(e)
