@@ -27,6 +27,13 @@ class Database():
         except sqlite3.Error as e:
             print(e)
 
+    def select(self, column, data):
+        try:
+            self.cursor.execute(self.table.select(column=column), (data, ))
+            return self.cursor.fetchall()
+        except sqlite3.Error as e:
+            print(e)
+
 
 class Table():
 
@@ -50,4 +57,8 @@ class Table():
     def insert(self):
         placeholder = '?' + ', ?' * (len(self.columns) - 1)
         syntax = f'insert into {self.table_name} values ({placeholder})'
+        return syntax
+
+    def select(self, column):
+        syntax = f'select * from {self.table_name} where {column}=?'
         return syntax
