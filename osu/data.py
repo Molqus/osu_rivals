@@ -8,14 +8,6 @@ from beatmap import osuAPI
 from db_utils import Database, Table
 
 
-'''
-すべてのビートマップの情報を収集する（API叩く）
-ranked, loved, approvedだけbeatmapテーブルに格納する
-その情報をもとにスコアを収集する
-scoreテーブルに格納する
-'''
-
-
 def get_beatmap_recursive(osu_api, since, json_name):
     json_flag = os.path.isfile(json_name)
     if json_flag:
@@ -96,14 +88,14 @@ def getAllscores():
     osu_api = osuAPI()
     json_name = '../data/beatmaps.json'
     table_name = 'score'
-    db_name = 'test.db'
+    db_name = '../data/test.db'
     columns = {'score_id': 'integer primary key', 'beatmap_id': 'integer', 'score': 'integer', 'user_id': 'integer',
                'username': 'text', 'pp': 'real', 'maxcombo': 'integer', 'rank': 'text', 'mods': 'integer',
                'perfect': 'integer', 'date': 'text'}
-    score_table = Table(table_name=table_name, columns=columns)
+    score_table = Table(table_name=table_name)
     db = Database(db_name=db_name, table=score_table)
     db.connect()
-    db.create_table()
+    db.create_table(columns=columns)
 
     with open(json_name) as f:
         beatmaps = json.load(f)
@@ -114,7 +106,7 @@ def getAllscores():
         print(f'beatmap_id: {b}, number of scores: {len(scores)}')
         data = [tuple(s.values()) for s in scores]
         # print(data)
-        db.insert_table(data=data)
+        db.insert_table(columns=columns, data=data)
         time.sleep(5)
 
     db.close()
