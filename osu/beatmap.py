@@ -41,26 +41,27 @@ class osuAPI():
                 print('request failed 10 times. stop requesting')
                 exit()
 
-    def get_user_from_name(self, user, mode=2, type='string', err_count=0):
+    def get_user_from_name(self, user, mode=2, user_type='string', err_count=0):
         print(f'get_user: {user}')
         api_url = f'{self.api_base_url}get_user'
         params = self.params
         params.update({
             'u': user,
             'm': mode,
-            'type': type,
+            'type': user_type,
         })
         res = requests.get(api_url, params=params)
         if res.status_code == 200:
-            if not res.json()['pp'] or not int(res.json()['pp']):
+            if not res.json()[0]['pp_raw'] or float(res.json()[0]['pp_raw']) == 0.0:
                 # ppがnullまたは0ならスコアの記録がないと判断できる
-                data = []
+                data = {}
             else:
-                data = [{'user_id': int(r['user_id']), 'playcount':int(r['playcount']),
-                         'ranked_score': int(r['ranked_score']), 'total_score': int(r['total_score']),
-                         'pp_rank': int(r['pp_rank']), 'level': float(r['level']),
-                         'pp': float(r['pp']), 'accuracy': float(r['accuracy']), 'country': r['country'],
-                         'pp_country_rank': int(r['pp_country_rank'])} for r in res.json()]
+                r = res.json()[0]
+                data = {'user_id': int(r['user_id']), 'user_name': user, 'playcount': int(r['playcount']),
+                        'ranked_score': int(r['ranked_score']), 'total_score': int(r['total_score']),
+                        'pp_rank': int(r['pp_rank']), 'level': float(r['level']),
+                        'pp': float(r['pp_raw']), 'accuracy': float(r['accuracy']), 'country': r['country'],
+                        'pp_country_rank': int(r['pp_country_rank'])}
             return data
         else:
             print(f'request failed. user: {user}, status: {res.status_code} \nwill retry after 10 sec...')
