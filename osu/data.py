@@ -8,7 +8,7 @@ from beatmap import osuAPI
 from db_utils import Database, Table
 
 
-def get_beatmap_recursive(osu_api, since, json_name):
+def get_beatmap_recursive(osu_api: osuAPI, since: str, json_name: str) -> None:
     json_flag = os.path.isfile(json_name)
     if json_flag:
         with open(json_name) as f:
@@ -53,7 +53,7 @@ def get_beatmap_recursive(osu_api, since, json_name):
         time.sleep(10)
 
 
-def getAllBeatmapData():
+def getAllBeatmapData() -> None:
     '''
     すべてのビートマップの情報を収集する
     sinceを用いることでleaderboardがある譜面だけ収集することができるので、
@@ -66,7 +66,7 @@ def getAllBeatmapData():
     get_beatmap_recursive(osu_api, since, json_name)
 
 
-def updateBeatmapData():
+def updateBeatmapData() -> None:
     osu_api = osuAPI()
     json_name = '../data/beatmaps.json'
 
@@ -84,7 +84,7 @@ def updateBeatmapData():
     get_beatmap_recursive(osu_api, since, json_name)
 
 
-def getAllscores():
+def getAllscores() -> None:
     osu_api = osuAPI()
     json_name = '../data/beatmaps.json'
     table_name = 'score'

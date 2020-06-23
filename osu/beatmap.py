@@ -12,7 +12,7 @@ class osuAPI():
 
         self.params = {'k': self.api_key}
 
-    def get_beatmaps(self, since, mode=2, a=1, limit=500, err_count=0):
+    def get_beatmaps(self, since: str, mode: int = 2, a: int = 1, limit: int = 500, err_count: int = 0) -> list:
         api_url = f'{self.api_base_url}get_beatmaps'
         params = self.params
         params.update({
@@ -41,7 +41,9 @@ class osuAPI():
                 print('request failed 10 times. stop requesting')
                 exit()
 
-    def get_user_from_name(self, user, mode=2, user_type='string', err_count=0):
+        return []
+
+    def get_user_from_name(self, user: int, mode: int = 2, user_type: str = 'string', err_count: int = 0) -> dict:
         print(f'get_user: {user}')
         api_url = f'{self.api_base_url}get_user'
         params = self.params
@@ -73,7 +75,9 @@ class osuAPI():
                 print('request failed 10 times. stop requesting')
                 exit()
 
-    def get_scores(self, beatmap, mode=2, limit=100, err_count=0):
+        return {}
+
+    def get_scores(self, beatmap: int, mode: int = 2, limit: int = 100, err_count: int = 0) -> list:
         api_url = f'{self.api_base_url}get_scores'
         params = self.params
         params.update({
@@ -97,3 +101,5 @@ class osuAPI():
             else:
                 print('request failed 10 times. stop requesting')
                 exit()
+
+        return []
