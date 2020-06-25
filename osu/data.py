@@ -53,6 +53,18 @@ def get_beatmap_recursive(osu_api: osuAPI, since: str, json_name: str) -> None:
         time.sleep(10)
 
 
+def get_score_recursive(osu_api: osuAPI, beatmap_id_list: set, db: Database, columns: dict) -> None:
+    count = 0
+    for b in beatmap_id_list:
+        scores = osu_api.get_scores(beatmap=b)
+        count += 1
+        print(f'beatmap_id: {b}, number of scores: {len(scores)}, count: {count}')
+        data = [tuple(s.values()) for s in scores]
+        # print(data)
+        db.insert_table(columns=columns, data=data)
+        time.sleep(5)
+
+
 def getAllBeatmapData() -> None:
     '''
     すべてのビートマップの情報を収集する
@@ -84,7 +96,7 @@ def updateBeatmapData() -> None:
     get_beatmap_recursive(osu_api, since, json_name)
 
 
-def getAllscores() -> None:
+def getAllScores() -> None:
     osu_api = osuAPI()
     json_name = '../data/beatmaps.json'
     table_name = 'score'
@@ -101,13 +113,13 @@ def getAllscores() -> None:
         beatmaps = json.load(f)
 
     beatmap_id_list = {b['beatmap_id'] for b in beatmaps}
-    for b in beatmap_id_list:
-        scores = osu_api.get_scores(beatmap=b)
-        print(f'beatmap_id: {b}, number of scores: {len(scores)}')
-        data = [tuple(s.values()) for s in scores]
-        # print(data)
-        db.insert_table(columns=columns, data=data)
-        time.sleep(5)
+
+    if db.select(select_column='beatmap_id', distinct=True):
+        exist_beatmaps = {d[0] for d in db.select(select_column='beatmap_id', distinct=True)}
+        remain_beatmaps = beatmap_id_list - exist_beatmaps
+        get_score_recursive(osu_api=osu_api, beatmap_id_list=remain_beatmaps, db=db, columns=columns)
+    else:
+        get_score_recursive(osu_api=osu_api, beatmap_id_list=beatmap_id_list, db=db, columns=columns)
 
     db.close()
 
@@ -123,6 +135,6 @@ if __name__ == "__main__":
     elif args.updateb:
         updateBeatmapData()
     elif args.gets:
-        getAllscores()
+        getAllScores()
     else:
         parser.print_help()

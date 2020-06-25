@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 
 class Table():
@@ -24,8 +25,16 @@ class Table():
         syntax = f'insert into {self.table_name} values ({placeholder})'
         return syntax
 
-    def select(self, column: dict) -> str:
-        syntax = f'select * from {self.table_name} where {column}=?'
+    def select(self, column: Optional[str], select_column: str) -> str:
+        syntax = f'select {select_column} from {self.table_name}'
+        if column:
+            syntax += f' where {column}=?'
+        return syntax
+
+    def select_distinct(self, column: Optional[str], select_column: str):
+        syntax = f'select distinct {select_column} from {self.table_name}'
+        if column:
+            syntax += f' where {column}=?'
         return syntax
 
 
@@ -55,9 +64,21 @@ class Database():
         except sqlite3.Error as e:
             print(e)
 
-    def select(self, column: dict, data: tuple):
+    def select(self, data: tuple = None, column: str = None, select_column: str = '*', distinct: bool = False):
         try:
-            self.cursor.execute(self.table.select(column=column), data)
-            return self.cursor.fetchall()
+            if distinct:
+                if column:
+                    self.cursor.execute(self.table.select_distinct(column=column, select_column=select_column), data)
+                    return self.cursor.fetchall()
+                else:
+                    self.cursor.execute(self.table.select_distinct(column=column, select_column=select_column))
+                    return self.cursor.fetchall()
+            else:
+                if column:
+                    self.cursor.execute(self.table.select(column=column, select_column=select_column), data)
+                    return self.cursor.fetchall()
+                else:
+                    self.cursor.execute(self.table.select(column=column, select_column=select_column))
+                    return self.cursor.fetchall()
         except sqlite3.Error as e:
             print(e)
