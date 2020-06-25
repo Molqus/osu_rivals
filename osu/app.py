@@ -1,9 +1,10 @@
+import json
 from flask import Flask, render_template, request
 
 from beatmap import osuAPI
 from db_utils import Database, Table
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__)
 
 
 @app.route('/')
@@ -35,21 +36,30 @@ def getUserInfo():
     requested_user_score_dict = {s[1]: s for s in requested_user_score_list if s[1] in both_scored_maps}
     target_user_score_dict = {s[1]: s for s in target_user_score_list if s[1] in both_scored_maps}
 
-    requested_user_wins = requested_user_loses = ties = 0
+    with open('../data/beatmaps.json', 'r') as f:
+        beatmap_list = json.load(f)
+
+    requested_user_wins = requested_user_losses = ties = 0
+    requested_user_win_maps = requested_user_lose_maps = tie_maps = []
+    print(beatmap_list[0])
     for b in both_scored_maps:
         requested_user_score = requested_user_score_dict[b][2]
         target_user_score = target_user_score_dict[b][2]
         if requested_user_score > target_user_score:
             requested_user_wins += 1
+            requested_user_win_maps.append([m for m in beatmap_list if m['beatmap_id'] == b][0])
         elif requested_user_score < target_user_score:
-            requested_user_loses += 1
+            requested_user_losses += 1
+            requested_user_lose_maps.append([m for m in beatmap_list if m['beatmap_id'] == b][0])
         else:
             ties += 1
+            requested_user_lose_maps.append([m for m in beatmap_list if m['beatmap_id'] == b][0])
 
-    res = {'wins': requested_user_wins, 'loses': requested_user_loses, 'ties': ties}
+    res = {'wins': requested_user_wins, 'loses': requested_user_losses, 'ties': ties}
     db.close()
 
-    return render_template('result.html', requested_user=requested_user_info, target_user=target_user_info, res=res)
+    return render_template('result.html', requested_user=requested_user_info, target_user=target_user_info, res=res,
+                           wins=requested_user_win_maps, losses=requested_user_lose_maps, ties=tie_maps)
 
 
 if __name__ == "__main__":

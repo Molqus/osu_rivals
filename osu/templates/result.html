@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    </head>
-    <body>
-        <p>your name: {{ requested_user.user_name }}</p>
-        <p>rival name: {{ target_user.user_name }}</p>
-        <p>result: {{ res.wins }}wins {{ res.loses }}losses {{ res.ties }}ties</p>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<p>your name: {{ requested_user.user_name }}</p>
+<p>rival name: {{ target_user.user_name }}</p>
+<p>result: {{ res.wins }}wins {{ res.loses }}losses {{ res.ties }}ties</p>
+{% endblock content %}
