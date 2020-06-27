@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    </head>
-    <body>
-        <form action='/test' method='POST'>
-            <p>自分のユーザーネームを入れてください。</p>
-            <input type='text' name='user'>
-            <p>比較したい相手のユーザーネームを入れてください。</p>
-            <input type='text' name='target'>
-            <input type='submit'>
-        </form>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <form action='/test' method='POST'>
+        <p>自分のユーザーネームを入れてください。</p>
+        <input type='text' name='user'>
+        <p>比較したい相手のユーザーネームを入れてください。</p>
+        <input type='text' name='target'>
+        <input type="checkbox" name='mod'>同modのスコアのみ比較する
+        <input type='submit'>
+    </form>
+</div>
+{% endblock content %}

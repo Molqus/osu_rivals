@@ -1,10 +1,39 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    </head>
-    <body>
-        <p>your name: {{ requested_user.user_name }}</p>
-        <p>rival name: {{ target_user.user_name }}</p>
-        <p>result: {{ res.wins }}wins {{ res.loses }}loses {{ res.ties }}ties</p>
-    </body>
-</html>
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+    <p>your name: {{ requested_user.user_name }}</p>
+    <p>rival name: {{ target_user.user_name }}</p>
+    <p>result: {{ res.wins }}wins {{ res.loses }}losses {{ res.ties }}ties</p>
+    <div class="row">
+        <div class="col-4">
+            <p>win maps</p>
+            {% for w in wins %}
+            <p>
+                <a href="https://osu.ppy.sh/beatmapsets/{{ w.beatmapset_id }}/#fruits/{{ w.beatmap_id }}">
+                    {{ w.artist }} - {{ w.title }} [{{ w.diff_name }}] ({{ w.creator }})
+                </a>
+            </p>
+            {% endfor %}
+        </div>
+        <div class="col-4">
+            <p>lose maps</p>
+            {% for l in losses %}
+            <p>
+                <a href="https://osu.ppy.sh/beatmapsets/{{ l.beatmapset_id }}/#fruits/{{ l.beatmap_id }}">
+                    {{ l.artist }} - {{ l.title }} [{{ l.diff_name }}] ({{ l.creator }})
+                </a>
+            </p>
+            {% endfor %}
+        </div>
+        <div class="col-4">
+            <p>tie maps</p>
+            {% for t in ties %}
+            <p>
+                <a href="https://osu.ppy.sh/beatmapsets/{{ t.beatmapset_id }}/#fruits/{{ t.beatmap_id }}">
+                    {{ t.artist }} - {{ t.title }} [{{ t.diff_name }}] ({{ t.creator }})
+                </a>
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
