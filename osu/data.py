@@ -55,10 +55,11 @@ def get_beatmap_recursive(osu_api: osuAPI, since: str, json_name: str) -> None:
 
 def get_score_recursive(osu_api: osuAPI, beatmap_id_list: set, db: Database, columns: dict) -> None:
     count = 0
+    max_count = len(beatmap_id_list)
     for b in beatmap_id_list:
         scores = osu_api.get_scores(beatmap=b)
         count += 1
-        print(f'beatmap_id: {b}, number of scores: {len(scores)}, count: {count}')
+        print(f'beatmap_id: {b}, number of scores: {len(scores)}, count: {count} / {max_count}')
         data = [tuple(s.values()) for s in scores]
         # print(data)
         db.insert_table(columns=columns, data=data)
