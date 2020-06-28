@@ -129,5 +129,4 @@ dmypy.json
 .pyre/
 
 # custom settings
-data/
 osu/API_KEY

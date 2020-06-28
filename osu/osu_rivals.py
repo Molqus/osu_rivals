@@ -26,8 +26,7 @@ def getUserInfo():
     target_user_info = osu_api.get_user_from_name(user=target_user)
 
     table_name = 'score'
-    db_name = '../data/test.db'
-    # db_name = '../data/test.db'
+    db_name = '../data/scores.db'
     score_table = Table(table_name=table_name)
     db = Database(db_name=db_name, table=score_table)
     column = 'user_id'

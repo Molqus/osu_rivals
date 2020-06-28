@@ -1,0 +1,2 @@
+beatmaps.json filter=lfs diff=lfs merge=lfs -text
+scores.db filter=lfs diff=lfs merge=lfs -text
