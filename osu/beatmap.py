@@ -44,7 +44,6 @@ class osuAPI():
         return []
 
     def get_user_from_name(self, user: int, mode: int = 2, user_type: str = 'string', err_count: int = 0) -> dict:
-        print(f'get_user: {user}')
         api_url = f'{self.api_base_url}get_user'
         params = self.params
         params.update({

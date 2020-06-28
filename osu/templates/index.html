@@ -2,11 +2,11 @@
 {% block content %}
 <div class="container">
     <form action='/test' method='POST'>
-        <p>自分のユーザーネームを入れてください。</p>
+        <p>Enter your osu! name</p>
         <input type='text' name='user'>
-        <p>比較したい相手のユーザーネームを入れてください。</p>
+        <p>Enter rival's osu! name that you want to compare</p>
         <input type='text' name='target'>
-        <input type="checkbox" name='mod'>同modのスコアのみ比較する
+        <input type="checkbox" name='mod'>show only scored with same mods
         <input type='submit'>
     </form>
 </div>
