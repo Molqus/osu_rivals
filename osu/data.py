@@ -4,8 +4,8 @@ import os
 import time
 from datetime import datetime, timedelta
 
-from beatmap import osuAPI
-from db_utils import Database, Table
+from osu.beatmap import osuAPI
+from osu.db_utils import Database, Table
 
 
 def get_beatmap_recursive(osu_api: osuAPI, since: str, json_name: str) -> None:
