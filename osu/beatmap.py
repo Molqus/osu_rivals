@@ -3,8 +3,6 @@ import time
 
 import requests
 
-from boto.s3.connection import S3Connection
-
 
 class osuAPI():
 
@@ -15,7 +13,7 @@ class osuAPI():
                 self.api_key = f.read()
         else:
             try:
-                self.api_key = S3Connection(os.environ['OSU_API_KEY'])
+                self.api_key = os.environ['OSU_API_KEY']
             except KeyError:
                 print("can't load api key.")
 
