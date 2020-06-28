@@ -3,8 +3,8 @@ import os
 
 from flask import Flask, render_template, request
 
-from beatmap import osuAPI
-from db_utils import Database, Table
+from osu.beatmap import osuAPI
+from osu.db_utils import Database, Table
 
 app = Flask(__name__)
 
@@ -16,6 +16,7 @@ def hello():
 
 @app.route('/result', methods=['POST'])
 def getUserInfo():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     osu_api = osuAPI()
     requested_user = request.form['user']
     target_user = request.form['target']
@@ -65,7 +66,3 @@ def getUserInfo():
 
     return render_template('result.html', requested_user=requested_user_info, target_user=target_user_info, res=res,
                            wins=requested_user_win_maps, losses=requested_user_lose_maps, ties=tie_maps)
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

@@ -1,1 +1,1 @@
-web: gunicorn osu/osu_rivals:app --log-file=-
+web: gunicorn run:app --log-file=-

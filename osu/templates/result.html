@@ -8,7 +8,8 @@
             <p>win maps</p>
             {% for w in wins %}
             <p>
-                <a href="https://osu.ppy.sh/beatmapsets/{{ w.beatmapset_id }}/#fruits/{{ w.beatmap_id }}">
+                <a href="https://osu.ppy.sh/beatmapsets/{{ w.beatmapset_id }}/#fruits/{{ w.beatmap_id }}"
+                    target="_blank">
                     {{ w.artist }} - {{ w.title }} [{{ w.diff_name }}] ({{ w.creator }})
                 </a>
             </p>
@@ -18,7 +19,8 @@
             <p>lose maps</p>
             {% for l in losses %}
             <p>
-                <a href="https://osu.ppy.sh/beatmapsets/{{ l.beatmapset_id }}/#fruits/{{ l.beatmap_id }}">
+                <a href="https://osu.ppy.sh/beatmapsets/{{ l.beatmapset_id }}/#fruits/{{ l.beatmap_id }}"
+                    target="_blank">
                     {{ l.artist }} - {{ l.title }} [{{ l.diff_name }}] ({{ l.creator }})
                 </a>
             </p>
@@ -28,7 +30,8 @@
             <p>tie maps</p>
             {% for t in ties %}
             <p>
-                <a href="https://osu.ppy.sh/beatmapsets/{{ t.beatmapset_id }}/#fruits/{{ t.beatmap_id }}">
+                <a href="https://osu.ppy.sh/beatmapsets/{{ t.beatmapset_id }}/#fruits/{{ t.beatmap_id }}"
+                    target="_blank">
                     {{ t.artist }} - {{ t.title }} [{{ t.diff_name }}] ({{ t.creator }})
                 </a>
             </p>
