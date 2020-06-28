@@ -1,8 +1,10 @@
 import json
+import os
+
 from flask import Flask, render_template, request
 
-from beatmap import osuAPI
-from db_utils import Database, Table
+from osu.beatmap import osuAPI
+from osu.db_utils import Database, Table
 
 app = Flask(__name__)
 
@@ -14,6 +16,7 @@ def hello():
 
 @app.route('/result', methods=['POST'])
 def getUserInfo():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     osu_api = osuAPI()
     requested_user = request.form['user']
     target_user = request.form['target']
@@ -23,8 +26,7 @@ def getUserInfo():
     target_user_info = osu_api.get_user_from_name(user=target_user)
 
     table_name = 'score'
-    db_name = '../data/test.db'
-    # db_name = '../data/test.db'
+    db_name = '../data/scores.db'
     score_table = Table(table_name=table_name)
     db = Database(db_name=db_name, table=score_table)
     column = 'user_id'
@@ -63,7 +65,3 @@ def getUserInfo():
 
     return render_template('result.html', requested_user=requested_user_info, target_user=target_user_info, res=res,
                            wins=requested_user_win_maps, losses=requested_user_lose_maps, ties=tie_maps)
-
-
-if __name__ == "__main__":
-    app.run()

@@ -1,5 +1,10 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
+    {% if not requested_user %}
+    <p>can't find your osu name. Please check your name that you typed.</p>
+    {% elif not target_user %}
+    <p>can't find rival's osu name. Please check rival's name that you typed.</p>
+    {% else %}
     <p>your name: {{ requested_user.user_name }}</p>
     <p>rival name: {{ target_user.user_name }}</p>
     <p>result: {{ res.wins }}wins {{ res.loses }}losses {{ res.ties }}ties</p>
@@ -8,7 +13,8 @@
             <p>win maps</p>
             {% for w in wins %}
             <p>
-                <a href="https://osu.ppy.sh/beatmapsets/{{ w.beatmapset_id }}/#fruits/{{ w.beatmap_id }}">
+                <a href="https://osu.ppy.sh/beatmapsets/{{ w.beatmapset_id }}/#fruits/{{ w.beatmap_id }}"
+                    target="_blank">
                     {{ w.artist }} - {{ w.title }} [{{ w.diff_name }}] ({{ w.creator }})
                 </a>
             </p>
@@ -18,7 +24,8 @@
             <p>lose maps</p>
             {% for l in losses %}
             <p>
-                <a href="https://osu.ppy.sh/beatmapsets/{{ l.beatmapset_id }}/#fruits/{{ l.beatmap_id }}">
+                <a href="https://osu.ppy.sh/beatmapsets/{{ l.beatmapset_id }}/#fruits/{{ l.beatmap_id }}"
+                    target="_blank">
                     {{ l.artist }} - {{ l.title }} [{{ l.diff_name }}] ({{ l.creator }})
                 </a>
             </p>
@@ -28,12 +35,14 @@
             <p>tie maps</p>
             {% for t in ties %}
             <p>
-                <a href="https://osu.ppy.sh/beatmapsets/{{ t.beatmapset_id }}/#fruits/{{ t.beatmap_id }}">
+                <a href="https://osu.ppy.sh/beatmapsets/{{ t.beatmapset_id }}/#fruits/{{ t.beatmap_id }}"
+                    target="_blank">
                     {{ t.artist }} - {{ t.title }} [{{ t.diff_name }}] ({{ t.creator }})
                 </a>
             </p>
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock content %}

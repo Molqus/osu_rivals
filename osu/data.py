@@ -4,8 +4,8 @@ import os
 import time
 from datetime import datetime, timedelta
 
-from beatmap import osuAPI
-from db_utils import Database, Table
+from osu.beatmap import osuAPI
+from osu.db_utils import Database, Table
 
 
 def get_beatmap_recursive(osu_api: osuAPI, since: str, json_name: str) -> None:
@@ -96,10 +96,10 @@ def getAllScores() -> None:
     osu_api = osuAPI()
     json_name = '../data/beatmaps.json'
     table_name = 'score'
-    db_name = '../data/test.db'
-    columns = {'score_id': 'integer primary key', 'beatmap_id': 'integer', 'score': 'integer', 'user_id': 'integer',
-               'username': 'text', 'pp': 'real', 'maxcombo': 'integer', 'rank': 'text', 'mods': 'integer',
-               'perfect': 'integer', 'date': 'text'}
+    db_name = '../data/scores.db'
+    columns = {'score_id': 'integer primary key', 'beatmap_id': 'integer', 'score': 'integer',
+               'user_id': 'integer', 'pp': 'real', 'maxcombo': 'integer', 'rank': 'text',
+               'mods': 'integer', 'perfect': 'integer', 'date': 'text'}
     score_table = Table(table_name=table_name)
     db = Database(db_name=db_name, table=score_table)
     db.connect()

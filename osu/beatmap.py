@@ -1,14 +1,23 @@
+import os
 import time
 
 import requests
+
+from boto.s3.connection import S3Connection
 
 
 class osuAPI():
 
     def __init__(self, *args, **kwargs):
         self.api_base_url = 'https://osu.ppy.sh/api/'
-        with open('API_KEY') as f:
-            self.api_key = f.read()
+        if os.path.isfile('API_KEY'):
+            with open('API_KEY') as f:
+                self.api_key = f.read()
+        else:
+            try:
+                self.api_key = S3Connection(os.environ['OSU_API_KEY'])
+            except KeyError:
+                print("can't load api key.")
 
         self.params = {'k': self.api_key}
 
