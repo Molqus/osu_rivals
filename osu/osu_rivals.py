@@ -20,7 +20,7 @@ def getUserInfo():
     osu_api = osuAPI()
     requested_user = request.form['user']
     target_user = request.form['target']
-    is_same_mod = True if request.form['mod'] == 'on' else False
+    is_same_mod = False if not request.form.getlist('mod') else True
     # TODO: get user info from database
     requested_user_info = osu_api.get_user_from_name(user=requested_user)
     target_user_info = osu_api.get_user_from_name(user=target_user)
@@ -36,8 +36,8 @@ def getUserInfo():
     target_user_score_list = db.select(column=column, data=(target_user_info['user_id'], ))
     both_scored_maps = {s[1] for s in requested_user_score_list} & {s[1] for s in target_user_score_list}
     if is_same_mod:
-        requested_user_score_mods = {s[1]: s[8] for s in requested_user_score_list if s[1] in both_scored_maps}
-        target_user_score_mods = {s[1]: s[8] for s in target_user_score_list if s[1] in both_scored_maps}
+        requested_user_score_mods = {s[1]: s[7] for s in requested_user_score_list if s[1] in both_scored_maps}
+        target_user_score_mods = {s[1]: s[7] for s in target_user_score_list if s[1] in both_scored_maps}
         both_scored_maps = {b for b in both_scored_maps if requested_user_score_mods[b] == target_user_score_mods[b]}
     # make dicts to access user's scores by O(1) from beatmap id
     requested_user_score_dict = {s[1]: s for s in requested_user_score_list if s[1] in both_scored_maps}
