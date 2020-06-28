@@ -1,1 +1,1 @@
-web: gunicorn app:app --log-file=-
+web: gunicorn osu/app:app --log-file=-
