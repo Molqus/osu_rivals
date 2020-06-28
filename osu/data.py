@@ -67,11 +67,6 @@ def get_score_recursive(osu_api: osuAPI, beatmap_id_list: set, db: Database, col
 
 
 def getAllBeatmapData() -> None:
-    '''
-    すべてのビートマップの情報を収集する
-    sinceを用いることでleaderboardがある譜面だけ収集することができるので、
-    1回APIを叩いて500譜面収集した後に最後の譜面のranked日時を次のsinceにする
-    '''
     osu_api = osuAPI()
     since = '2000-01-01'
     json_name = '../data/beatmaps.json'
