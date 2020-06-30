@@ -1,9 +1,11 @@
 {% extends 'base.html' %} {% block content %}
 <div class="container">
-    {% if not requested_user %}
-    <p>can't find your osu name. Please check your name that you typed.</p>
+    {% if not requested_user and not target_user %}
+    <p>can't find you and rival's osu name. Please check the names that you typed.</p>
     {% elif not target_user %}
     <p>can't find rival's osu name. Please check rival's name that you typed.</p>
+    {% elif not requested_user %}
+    <p>can't find your osu name. Please check your name that you typed.</p>
     {% else %}
     <p>your name: {{ requested_user.user_name }}</p>
     <p>rival name: {{ target_user.user_name }}</p>
@@ -44,5 +46,10 @@
         </div>
     </div>
     {% endif %}
+    <div class="row text-center">
+        <div class='col-12'>
+            <p><a href="#" onclick="history.back(); return false;">Back</a></p>
+        </div>
+    </div>
 </div>
 {% endblock content %}

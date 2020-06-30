@@ -40,6 +40,9 @@ def getUserInfo():
     requested_user_info = osu_api.get_user_from_name(user=requested_user)
     target_user_info = osu_api.get_user_from_name(user=target_user)
 
+    if not requested_user_info or not target_user_info:
+        return render_template('result.html', requested_user=requested_user_info, target_user=target_user_info)
+
     requested_user_score_list = db.session.query(Score).filter(Score.user_id == requested_user_info['user_id']).all()
     target_user_score_list = db.session.query(Score).filter(Score.user_id == target_user_info['user_id']).all()
 
