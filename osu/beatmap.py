@@ -60,8 +60,8 @@ class osuAPI():
         })
         res = requests.get(api_url, params=params)
         if res.status_code == 200:
-            if not res.json()[0]['pp_raw'] or float(res.json()[0]['pp_raw']) == 0.0:
-                # ppがnullまたは0ならスコアの記録がないと判断できる
+            if not res.json() and not res.json()[0]['pp_raw'] or float(res.json()[0]['pp_raw']) == 0.0:
+                # if pp is null or 0, the user has no score record
                 data = {}
             else:
                 r = res.json()[0]
