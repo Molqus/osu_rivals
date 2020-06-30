@@ -2,21 +2,36 @@ import json
 import os
 
 from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 
 from osu.beatmap import osuAPI
-from osu.db_utils import Database, Table
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__)
+if os.path.isfile('DB_TXT'):
+    with open('DB_TXT') as f:
+        username = f.readline().strip()
+        password = f.readline().strip()
+    db_uri = f'postgresql://{username}:{password}@localhost/scores'
+else:
+    db_uri = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+db.Model.metadata.reflect(db.engine)
+
+
+class Score(db.Model):
+    __table__ = db.Model.metadata.tables['score']
 
 
 @app.route('/')
-def hello():
+def index():
     return render_template('index.html')
 
 
 @app.route('/result', methods=['POST'])
 def getUserInfo():
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     osu_api = osuAPI()
     requested_user = request.form['user']
     target_user = request.form['target']
@@ -25,23 +40,20 @@ def getUserInfo():
     requested_user_info = osu_api.get_user_from_name(user=requested_user)
     target_user_info = osu_api.get_user_from_name(user=target_user)
 
-    table_name = 'score'
-    db_name = '../data/scores.db'
-    score_table = Table(table_name=table_name)
-    db = Database(db_name=db_name, table=score_table)
-    column = 'user_id'
+    requested_user_score_list = db.session.query(Score).filter(Score.user_id == requested_user_info['user_id']).all()
+    target_user_score_list = db.session.query(Score).filter(Score.user_id == target_user_info['user_id']).all()
 
-    db.connect()
-    requested_user_score_list = db.select(column=column, data=(requested_user_info['user_id'], ))
-    target_user_score_list = db.select(column=column, data=(target_user_info['user_id'], ))
-    both_scored_maps = {s[1] for s in requested_user_score_list} & {s[1] for s in target_user_score_list}
+    both_scored_maps = {s.beatmap_id for s in requested_user_score_list} & {
+        s.beatmap_id for s in target_user_score_list}
     if is_same_mod:
-        requested_user_score_mods = {s[1]: s[7] for s in requested_user_score_list if s[1] in both_scored_maps}
-        target_user_score_mods = {s[1]: s[7] for s in target_user_score_list if s[1] in both_scored_maps}
+        requested_user_score_mods = {
+            s.beatmap_id: s.mods for s in requested_user_score_list if s.beatmap_id in both_scored_maps}
+        target_user_score_mods = {
+            s.beatmap_id: s.mods for s in target_user_score_list if s.beatmap_id in both_scored_maps}
         both_scored_maps = {b for b in both_scored_maps if requested_user_score_mods[b] == target_user_score_mods[b]}
     # make dicts to access user's scores by O(1) from beatmap id
-    requested_user_score_dict = {s[1]: s for s in requested_user_score_list if s[1] in both_scored_maps}
-    target_user_score_dict = {s[1]: s for s in target_user_score_list if s[1] in both_scored_maps}
+    requested_user_score_dict = {s.beatmap_id: s for s in requested_user_score_list if s.beatmap_id in both_scored_maps}
+    target_user_score_dict = {s.beatmap_id: s for s in target_user_score_list if s.beatmap_id in both_scored_maps}
 
     with open('../data/beatmaps.json', 'r') as f:
         beatmap_list = json.load(f)
@@ -51,8 +63,8 @@ def getUserInfo():
     requested_user_lose_maps = []
     tie_maps = []
     for b in both_scored_maps:
-        requested_user_score = requested_user_score_dict[b][2]
-        target_user_score = target_user_score_dict[b][2]
+        requested_user_score = requested_user_score_dict[b].score
+        target_user_score = target_user_score_dict[b].score
         if requested_user_score > target_user_score:
             requested_user_win_maps.append(beatmap_dict[b])
         elif requested_user_score < target_user_score:
@@ -61,7 +73,6 @@ def getUserInfo():
             tie_maps.append(beatmap_dict[b])
 
     res = {'wins': len(requested_user_win_maps), 'loses': len(requested_user_lose_maps), 'ties': len(tie_maps)}
-    db.close()
 
     return render_template('result.html', requested_user=requested_user_info, target_user=target_user_info, res=res,
                            wins=requested_user_win_maps, losses=requested_user_lose_maps, ties=tie_maps)
