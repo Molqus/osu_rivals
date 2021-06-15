@@ -6,5 +6,6 @@
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "autopep8",
     // "python.formatting.autopep8Args": ["max_line_length", "120", "--aggressive", "--aggressive"]
-    "python.linting.mypyEnabled": true
+    "python.linting.mypyEnabled": true,
+    "restructuredtext.confPath": ""
 }
