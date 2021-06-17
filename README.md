@@ -14,7 +14,7 @@ using [poetry](https://python-poetry.org/) to manage modules.
 poetry install
 ```
 
-to run under local environment, you should put `osu/API_KEY` file with your osu api written on it.
+to run under local environment, you should put `osu/API_KEY` file with your osu api written on it. you can get api key from [here](https://osu.ppy.sh/p/api/) (required osu account).
 and you need to run `osu/data.py` to get ranked beatmap data (it'll be saved as `data/beatmaps.json`) and get all score (it'll be saved to postgresql), but I'm now fixing(rewriting) this file because I wrote this file assuming that using sqlite.
 to get beatmap data, you should run:
 
