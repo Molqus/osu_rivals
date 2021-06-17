@@ -1,6 +1,13 @@
 # osu_rivals
 
 comparing your score and rival score. only available in osu!catch now.
+
+## Notice
+
+I'll transfer the ownership of this repository to my main account because I realized I shouldn't make alt acccount in github.
+
+## Usage
+
 using [poetry](https://python-poetry.org/) to manage modules.
 
 ```
